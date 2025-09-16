@@ -33,6 +33,21 @@
     isEntryModalOpen = false;
   }
 
+  async function updateEntry() {
+    await fetch("/api/entries", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        date: modal.date,
+        title: modal.title,
+        content: modal.content,
+        id: modal.id,
+      }),
+    });
+    loadEntries();
+    isEntryModalOpen = false;
+  }
+
   async function deleteEntry() {
     await fetch("/api/entries", {
       method: "DELETE",
@@ -124,7 +139,13 @@
         <span style:margin-left="8px">SAVE ENTRY</span>
       </Button>
     {:else}
-      <Button onClick={addEntry} marginTop="9px" width="100%">
+      <Button
+        onClick={() => {
+          updateEntry();
+        }}
+        marginTop="9px"
+        width="100%"
+      >
         <Pen size="23px" fill={$themeStore.palette.text.contrast} />
         <span style:margin-left="8px">MODIFY ENTRY</span>
       </Button>
