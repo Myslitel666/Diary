@@ -51,7 +51,7 @@
           class="created-time"
           style:color={$themeMode === "light" ? "#ccc" : "#555"}
         >
-          {e.created_at}
+          {e.created_at.slice(0, 10)}
         </p>
       </div>
     </Button>
