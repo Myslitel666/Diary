@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { TextField, TextArea, Box, Button, Modal } from "svelte-elegant";
   import { themeStore, themeMode } from "svelte-elegant/stores";
-  import { Pen } from "svelte-elegant/icons-elegant";
+  import { Pen, Delete, Save, Plus } from "svelte-elegant/icons-elegant";
   let isEntryModalOpen = false;
   let entries = [];
   let boxSize = "220px";
@@ -82,6 +82,15 @@
     </Button>
   {/each}
   <Modal bind:isOpen={isEntryModalOpen} width="400px">
+    <div style:width="100%" style:display="flex" style:justify-content="center">
+      <p
+        style:font-size="24px"
+        style:font-weight="600"
+        style:margin-bottom="14px"
+      >
+        {#if modal.isCreate}Create{:else}Modify{/if} Entry
+      </p>
+    </div>
     <TextField
       bind:value={modal.date}
       width="100%"
@@ -96,14 +105,30 @@
       <TextArea bind:value={modal.content} width="100%" label="Content"
       ></TextArea>
     </div>
-    <Button onClick={addEntry} marginTop="9px" width="100%">
-      {#if modal.isCreate}
-        Create
-      {:else}
-        Modify
-      {/if}
-      Entry
-    </Button>
+    {#if modal.isCreate}
+      <Button onClick={addEntry} marginTop="9px" width="100%">
+        <Save size="23px" fill={$themeStore.palette.text.contrast} />
+        <span style:margin-left="8px">SAVE ENTRY</span>
+      </Button>
+    {:else}
+      <Button onClick={addEntry} marginTop="9px" width="100%">
+        <Pen size="23px" fill={$themeStore.palette.text.contrast} />
+        <span style:margin-left="8px">MODIFY ENTRY</span>
+      </Button>
+    {/if}
+    {#if !modal.isCreate}
+      <Button
+        variant="Outlined"
+        borderColor="#f50d0d"
+        color="#f50d0d"
+        marginTop="9px"
+        bgColorHover="rgba(255,0,0,0.12)"
+        width="100%"
+      >
+        <Delete fill="#f50d0d" size="25px" />
+        <span style:margin-left="5px">DELETE ENTRY</span>
+      </Button>
+    {/if}
   </Modal>
 </div>
 
