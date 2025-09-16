@@ -5,14 +5,12 @@
   import { Pen } from "svelte-elegant/icons-elegant";
   let isEntryModalOpen = false;
   let entries = [];
-  let title = "";
-  let content = "";
-  let date = "";
   let boxSize = "220px";
   let modal = {
     title: "",
     content: "",
     date: "",
+    isCreate: false,
   };
 
   async function loadEntries() {
@@ -24,11 +22,14 @@
     await fetch("/api/entries", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ date, title, content }),
+      body: JSON.stringify({
+        date: modal.date,
+        title: modal.title,
+        content: modal.content,
+      }),
     });
-    title = "";
-    content = "";
     loadEntries();
+    isEntryModalOpen = false;
   }
   onMount(loadEntries);
 </script>
@@ -41,6 +42,7 @@
     fontSize="20px"
     onClick={() => {
       isEntryModalOpen = true;
+      modal = { title: "", content: "", date: "", isCreate: true };
     }}
   >
     <div class="create-button flex">
@@ -57,6 +59,12 @@
       height={boxSize}
       onClick={() => {
         isEntryModalOpen = true;
+        modal = {
+          title: e.title,
+          content: e.content,
+          date: e.date,
+          isCreate: false,
+        };
       }}
     >
       <div class="flex entry" style:width={boxSize} style:height={boxSize}>
@@ -88,8 +96,14 @@
       <TextArea bind:value={modal.content} width="100%" label="Content"
       ></TextArea>
     </div>
-    <Button onClick={addEntry} marginTop="9px" width="100%">Create Entry</Button
-    >
+    <Button onClick={addEntry} marginTop="9px" width="100%">
+      {#if modal.isCreate}
+        Create
+      {:else}
+        Modify
+      {/if}
+      Entry
+    </Button>
   </Modal>
 </div>
 
