@@ -1,9 +1,10 @@
 <script>
   import { onMount } from "svelte";
-  import { TextField, TextArea, Box, Button, Modal } from "svelte-elegant";
+  import { TextField, TextArea, Button, Modal } from "svelte-elegant";
   import { themeStore, themeMode } from "svelte-elegant/stores";
-  import { Pen, Delete, Save, Plus } from "svelte-elegant/icons-elegant";
+  import { Pen, Delete, Save } from "svelte-elegant/icons-elegant";
   let isEntryModalOpen = false;
+  let isDeleteModalOpen = false;
   let entries = [];
   let boxSize = "220px";
   let modal = {
@@ -136,12 +137,66 @@
         marginTop="9px"
         bgColorHover="rgba(255,0,0,0.12)"
         width="100%"
-        onClick={deleteEntry}
+        onClick={() => {
+          isEntryModalOpen = false;
+          isDeleteModalOpen = true;
+        }}
       >
         <Delete fill="#f50d0d" size="25px" />
         <span style:margin-left="5px">DELETE ENTRY</span>
       </Button>
     {/if}
+  </Modal>
+
+  <Modal bind:isOpen={isDeleteModalOpen} width="auto">
+    <div
+      style:width="100%"
+      style:display="flex"
+      style:flex-direction="column"
+      style:justify-content="center"
+      style:text-align="center"
+    >
+      <p
+        style:font-size="24px"
+        style:font-weight="600"
+        style:margin-bottom="5px"
+      >
+        Delete Entry
+      </p>
+      <p style:margin-bottom="5px">
+        Are you sure you want to delete this entry?
+      </p>
+    </div>
+    <div
+      style:width="100%"
+      style:display="flex"
+      style:justify-content="center"
+      style:gap="7px"
+    >
+      <Button
+        variant="Text"
+        borderColor="#f50d0d"
+        color="#f50d0d"
+        bgColorHover="rgba(255,0,0,0.12)"
+        width="100px"
+        onClick={() => {
+          deleteEntry();
+          isDeleteModalOpen = false;
+        }}
+      >
+        <span style:margin-left="px">YES</span>
+      </Button>
+      <Button
+        variant="Text"
+        width="100px"
+        onClick={() => {
+          isEntryModalOpen = true;
+          isDeleteModalOpen = false;
+        }}
+      >
+        <span style:width="30px">NO</span>
+      </Button>
+    </div>
   </Modal>
 </div>
 
