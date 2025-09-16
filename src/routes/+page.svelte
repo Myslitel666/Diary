@@ -3,6 +3,7 @@
   import { TextField, TextArea, Box, Button, Modal } from "svelte-elegant";
   import { themeStore, themeMode } from "svelte-elegant/stores";
   import { Pen } from "svelte-elegant/icons-elegant";
+  let isEntryModalOpen = false;
   let entries = [];
   let title = "";
   let content = "";
@@ -28,9 +29,17 @@
 </script>
 
 <div class="container">
-  <Button variant="Outlined" width={boxSize} height={boxSize} fontSize="20px">
+  <Button
+    variant="Outlined"
+    width={boxSize}
+    height={boxSize}
+    fontSize="20px"
+    onClick={() => {
+      isEntryModalOpen = true;
+    }}
+  >
     <div class="create-button flex">
-      <Pen size="50px" />
+      <Pen size="45px" />
       <p style:color={$themeStore.palette.primary}>Create New Diary Entry</p>
     </div>
   </Button>
@@ -41,6 +50,9 @@
       bgColorHover={$themeStore.surface.ghost.background}
       width={boxSize}
       height={boxSize}
+      onClick={() => {
+        isEntryModalOpen = true;
+      }}
     >
       <div class="flex entry" style:width={boxSize} style:height={boxSize}>
         <p style:font-weight="600" style:color={$themeStore.palette.primary}>
@@ -56,13 +68,15 @@
       </div>
     </Button>
   {/each}
+  <Modal bind:isOpen={isEntryModalOpen}>
+    <TextField bind:value={date} type="date" label="Date" required />
+    <TextField bind:value={title} label="Title" required />
+    <div style:margin-top="5px">
+      <TextArea bind:value={content} label="Content"></TextArea>
+    </div>
+    <Button onClick={addEntry}>Добавить запись</Button>
+  </Modal>
 </div>
-<TextField bind:value={date} type="date" label="Date" required />
-<TextField bind:value={title} label="Title" required />
-<div style:margin-top="5px">
-  <TextArea bind:value={content} label="Content"></TextArea>
-</div>
-<button on:click={addEntry}>Добавить запись</button>
 
 <style>
   .container {
