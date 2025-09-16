@@ -1,8 +1,10 @@
 <script>
   import { onMount } from "svelte";
+  import { TextField, TextArea } from "svelte-elegant";
   let entries = [];
   let title = "";
   let content = "";
+  let date = "";
 
   async function loadEntries() {
     const res = await fetch("/api/entries");
@@ -26,8 +28,11 @@
 <h1>Дневник</h1>
 
 <form on:submit|preventDefault={addEntry}>
-  <input bind:value={title} placeholder="Заголовок" required />
-  <textarea bind:value={content} placeholder="Содержание"></textarea>
+  <TextField bind:value={date} type="date" label="Date" required />
+  <TextField bind:value={title} label="Title" required />
+  <div style:margin-top="5px">
+    <TextArea bind:value={content} label="Content"></TextArea>
+  </div>
   <button>Добавить запись</button>
 </form>
 
