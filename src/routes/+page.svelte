@@ -31,6 +31,18 @@
     loadEntries();
     isEntryModalOpen = false;
   }
+
+  async function deleteEntry() {
+    await fetch("/api/entries", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: modal.id,
+      }),
+    });
+    loadEntries();
+    isEntryModalOpen = false;
+  }
   onMount(loadEntries);
 </script>
 
@@ -60,6 +72,7 @@
       onClick={() => {
         isEntryModalOpen = true;
         modal = {
+          id: e.id,
           title: e.title,
           content: e.content,
           date: e.date,
@@ -102,8 +115,7 @@
       <TextField bind:value={modal.title} width="100%" label="Title" required />
     </div>
     <div style:margin-top="9px">
-      <TextArea bind:value={modal.content} width="100%" label="Content"
-      ></TextArea>
+      <TextArea bind:value={modal.content} width="100%" label="Content" />
     </div>
     {#if modal.isCreate}
       <Button onClick={addEntry} marginTop="9px" width="100%">
@@ -124,6 +136,7 @@
         marginTop="9px"
         bgColorHover="rgba(255,0,0,0.12)"
         width="100%"
+        onClick={deleteEntry}
       >
         <Delete fill="#f50d0d" size="25px" />
         <span style:margin-left="5px">DELETE ENTRY</span>

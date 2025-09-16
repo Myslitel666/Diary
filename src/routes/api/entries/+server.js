@@ -28,3 +28,14 @@ export async function POST({ request }) {
   const info = stmt.run(date, title, content);
   return new Response(JSON.stringify({ id: info.lastInsertRowid }), { headers: { "Content-Type": "application/json" } });
 }
+
+export async function DELETE({ request }) {
+  const { id } = await request.json();
+
+  const stmt = db.prepare("DELETE FROM entries WHERE id = ?");
+  const info = stmt.run(id);
+
+  return new Response(JSON.stringify({ id: info.changes }), {
+    headers: { "Content-Type": "application/json" }
+  });
+}
