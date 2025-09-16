@@ -1,12 +1,13 @@
 <script>
   import { onMount } from "svelte";
   import { TextField, TextArea, Box, Button, Modal } from "svelte-elegant";
-  import { themeStore } from "svelte-elegant/stores";
+  import { themeStore, themeMode } from "svelte-elegant/stores";
   import { Pen } from "svelte-elegant/icons-elegant";
   let entries = [];
   let title = "";
   let content = "";
   let date = "";
+  let boxSize = "220px";
 
   async function loadEntries() {
     const res = await fetch("/api/entries");
@@ -27,8 +28,8 @@
 </script>
 
 <div class="container">
-  <Button variant="Outlined" width="220px" height="220px" fontSize="20px">
-    <div class="create-button">
+  <Button variant="Outlined" width={boxSize} height={boxSize} fontSize="20px">
+    <div class="create-button flex">
       <Pen size="50px" />
       <p style:color={$themeStore.palette.primary}>Create New Diary Entry</p>
     </div>
@@ -38,13 +39,20 @@
       variant="Outlined"
       borderColor={$themeStore.border.elegant.color}
       bgColorHover={$themeStore.surface.ghost.background}
-      width="220px"
-      height="220px"
+      width={boxSize}
+      height={boxSize}
     >
-      <div>
-        <p>{e.title}</p>
+      <div class="flex entry" style:width={boxSize} style:height={boxSize}>
+        <p style:font-weight="600" style:color={$themeStore.palette.primary}>
+          {e.title}
+        </p>
         <p>{e.content}</p>
-        <p>({e.created_at})</p>
+        <p
+          class="created-time"
+          style:color={$themeMode === "light" ? "#ccc" : "#555"}
+        >
+          {e.created_at}
+        </p>
       </div>
     </Button>
   {/each}
@@ -66,10 +74,27 @@
     gap: 10px;
   }
 
-  .create-button {
+  .created-time {
+    position: absolute;
+    bottom: 10px;
+    right: 12px;
+    font-size: 16px;
+  }
+
+  .flex {
     display: flex;
     flex-direction: column;
     justify-content: center;
+  }
+
+  .entry {
+    position: relative;
+    width: 100%;
+    gap: 7px;
+    height: 100%;
+  }
+
+  .create-button {
     align-items: center;
     gap: 12px;
     padding: 15px;
