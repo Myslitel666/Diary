@@ -9,22 +9,22 @@ const db = new Database(dbPath);
 db.prepare(`
   CREATE TABLE IF NOT EXISTS entries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
     title TEXT NOT NULL,
-    content TEXT,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    content TEXT
   )
 `).run();
 
 // GET /api/entries
 export function GET() {
-  const rows = db.prepare("SELECT * FROM entries ORDER BY created_at DESC").all();
+  const rows = db.prepare("SELECT * FROM entries ORDER BY date DESC").all();
   return new Response(JSON.stringify(rows), { headers: { "Content-Type": "application/json" } });
 }
 
 // POST /api/entries
 export async function POST({ request }) {
-  const { title, content } = await request.json();
-  const stmt = db.prepare("INSERT INTO entries (title, content) VALUES (?, ?)");
-  const info = stmt.run(title, content);
+  const { date, title, content } = await request.json();
+  const stmt = db.prepare("INSERT INTO entries (date, title, content) VALUES (?, ?, ?)");
+  const info = stmt.run(date, title, content);
   return new Response(JSON.stringify({ id: info.lastInsertRowid }), { headers: { "Content-Type": "application/json" } });
 }

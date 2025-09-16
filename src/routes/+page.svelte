@@ -9,6 +9,11 @@
   let content = "";
   let date = "";
   let boxSize = "220px";
+  let modal = {
+    title: "",
+    content: "",
+    date: "",
+  };
 
   async function loadEntries() {
     const res = await fetch("/api/entries");
@@ -19,7 +24,7 @@
     await fetch("/api/entries", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, content }),
+      body: JSON.stringify({ date, title, content }),
     });
     title = "";
     content = "";
@@ -63,18 +68,28 @@
           class="created-time"
           style:color={$themeMode === "light" ? "#ccc" : "#555"}
         >
-          {e.created_at.slice(0, 10)}
+          {e.date.slice(0, 10)}
         </p>
       </div>
     </Button>
   {/each}
-  <Modal bind:isOpen={isEntryModalOpen}>
-    <TextField bind:value={date} type="date" label="Date" required />
-    <TextField bind:value={title} label="Title" required />
-    <div style:margin-top="5px">
-      <TextArea bind:value={content} label="Content"></TextArea>
+  <Modal bind:isOpen={isEntryModalOpen} width="400px">
+    <TextField
+      bind:value={modal.date}
+      width="100%"
+      type="date"
+      label="Date"
+      required
+    />
+    <div style:margin-top="9px">
+      <TextField bind:value={modal.title} width="100%" label="Title" required />
     </div>
-    <Button onClick={addEntry}>Добавить запись</Button>
+    <div style:margin-top="9px">
+      <TextArea bind:value={modal.content} width="100%" label="Content"
+      ></TextArea>
+    </div>
+    <Button onClick={addEntry} marginTop="9px" width="100%">Create Entry</Button
+    >
   </Modal>
 </div>
 
