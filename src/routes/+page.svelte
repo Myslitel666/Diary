@@ -304,21 +304,21 @@
           >
             {#each details as detail, i}
               <div
+                style:width="100%"
                 style:display="flex"
-                style:justify-content="center"
-                style:align-items="center"
-                style:text-align="center"
                 style:margin-left="20px"
               >
-                <p style:margin-right="5px" style:margin-top="-4px">
+                <p style:margin-right="5px" style:margin-top="4px">
                   {i + 1}. {detail.content}
                 </p>
-                <IconHover padding="5px" isPrimary>
-                  <Pen size="18px" />
-                </IconHover>
-                <IconHover padding="5px">
-                  <Delete size="19px" />
-                </IconHover>
+                <div style:margin-left="auto" style:display="flex">
+                  <IconHover padding="5px" isPrimary>
+                    <Pen size="18px" />
+                  </IconHover>
+                  <IconHover padding="5px">
+                    <Delete size="19px" />
+                  </IconHover>
+                </div>
               </div>
             {/each}
           </div>
@@ -326,7 +326,8 @@
       </div>
       <div class="flex center" style:width="100%" style:gap="7px">
         <Button
-          width="240px"
+          width="100%"
+          maxWidth="340px"
           onClick={() => {
             isDetailModalOpen = true;
             isDetailsModalOpen = false;
