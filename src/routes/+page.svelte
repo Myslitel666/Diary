@@ -14,6 +14,7 @@
   let isDeleteModalOpen = false;
   let isDetailModalOpen = false;
   let isDetailsModalOpen = false;
+  let isDeleteDetailOpen = false;
   let detail = { id: 0, entry_id: 0, content: "" };
   let isInitialized = false;
   let entries = [];
@@ -51,6 +52,17 @@
       body: JSON.stringify({
         entry_id: modal.id,
         content: detail.content,
+      }),
+    });
+    loadDetails(modal.id);
+  }
+
+  async function deleteDetail() {
+    await fetch("/api/details", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: detail.id,
       }),
     });
     loadDetails(modal.id);
@@ -302,20 +314,42 @@
             style:font-size="16px"
             class="center flex"
           >
-            {#each details as detail, i}
+            {#each details as det, i}
               <div
                 style:width="100%"
                 style:display="flex"
                 style:margin-left="20px"
               >
                 <p style:margin-right="5px" style:margin-top="4px">
-                  {i + 1}. {detail.content}
+                  {i + 1}. {det.content}
                 </p>
                 <div style:margin-left="auto" style:display="flex">
-                  <IconHover padding="5px" isPrimary>
+                  <IconHover
+                    padding="5px"
+                    isPrimary
+                    onClick={() => {
+                      detail = {
+                        id: det.id,
+                        entry_id: det.entry_id,
+                        content: det.content,
+                      };
+                    }}
+                  >
                     <Pen size="18px" />
                   </IconHover>
-                  <IconHover padding="5px">
+                  <IconHover
+                    padding="5px"
+                    onClick={() => {
+                      detail = {
+                        id: det.id,
+                        entry_id: det.entry_id,
+                        content: det.content,
+                      };
+
+                      isDeleteDetailOpen = true;
+                      isDetailsModalOpen = false;
+                    }}
+                  >
                     <Delete size="19px" />
                   </IconHover>
                 </div>
@@ -378,6 +412,41 @@
           }}
         >
           <span>Back to the Details</span>
+        </Button>
+      </div>
+    </Modal>
+
+    <Modal bind:isOpen={isDeleteDetailOpen} width="270px">
+      <div class="center modal-blocks">
+        <p class="modal-header">Delete Detail</p>
+        <p style:margin-bottom="5px">
+          Are you sure you want to delete this detail?
+        </p>
+      </div>
+      <div class="center" style:gap="7px">
+        <Button
+          variant="Text"
+          borderColor="#f50d0d"
+          color="#f50d0d"
+          bgColorHover="rgba(255,0,0,0.12)"
+          width="100px"
+          onClick={() => {
+            deleteDetail();
+            isDetailsModalOpen = true;
+            isDeleteDetailOpen = false;
+          }}
+        >
+          <span style:margin-left="px">YES</span>
+        </Button>
+        <Button
+          variant="Text"
+          width="100px"
+          onClick={() => {
+            isDetailsModalOpen = true;
+            isDeleteDetailOpen = false;
+          }}
+        >
+          <span style:width="30px">NO</span>
         </Button>
       </div>
     </Modal>
