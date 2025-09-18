@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
   import {
     TextField,
@@ -8,28 +8,24 @@
     ScrollbarContainer,
   } from "svelte-elegant";
   import { themeStore, themeMode } from "svelte-elegant/stores";
-  import { Pen, Delete, Save } from "svelte-elegant/icons-elegant";
+  import { Pen, Delete, Save, Plus } from "svelte-elegant/icons-elegant";
   let isEntryModalOpen = false;
   let isDeleteModalOpen = false;
+  let isDetailModalOpen = false;
   let isDetailsModalOpen = false;
+  let detail = { id: 0, entry_id: 0, content: "" };
   let isInitialized = false;
   let entries = [];
   let boxSize = "220px";
 
-  let details = [
-    {
-      id: 1,
-      entry_id: 1,
-      content: "Detail aaa",
-    },
-    {
-      id: 2,
-      entry_id: 1,
-      content: "Detail bbb",
-    },
-  ];
+  let details: {
+    id: number;
+    entry_id: number;
+    content: string;
+  }[] = [];
 
   let modal = {
+    id: 0,
     title: "",
     content: "",
     date: "",
@@ -39,6 +35,24 @@
   async function loadEntries() {
     const res = await fetch("/api/entries");
     entries = await res.json();
+  }
+
+  async function loadDetails(entry_id) {
+    const res = await fetch(`/api/details?entry_id=${entry_id}`);
+    details = await res.json();
+  }
+
+  async function addDetail() {
+    console.log(detail.content);
+    await fetch("/api/details", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        entry_id: modal.id,
+        content: detail.content,
+      }),
+    });
+    loadDetails(modal.id);
   }
 
   async function addEntry() {
@@ -108,6 +122,7 @@
       onClick={() => {
         isEntryModalOpen = true;
         modal = {
+          id: 0,
           title: "",
           content: "",
           date: "",
@@ -209,6 +224,7 @@
             onClick={() => {
               isEntryModalOpen = false;
               isDetailsModalOpen = true;
+              loadDetails(modal.id);
             }}
           >
             Check Details
@@ -275,18 +291,32 @@
         </Button>
       </div>
     </Modal>
+
     <Modal bind:isOpen={isDetailsModalOpen} width="auto">
       <div class="center modal-blocks">
         <p class="modal-header">Details Entry</p>
         <ScrollbarContainer height="auto" maxHeight="500px" width="500px">
-          <div style:line-height="1.38">
+          <div
+            style:line-height="1.38"
+            style:margin-bottom={details.length ? "10px" : ""}
+          >
             {#each details as detail}
               <p>{detail.content}</p>
             {/each}
           </div>
         </ScrollbarContainer>
       </div>
-      <div class="center" style:gap="7px">
+      <div class="flex center" style:width="100%" style:gap="7px">
+        <Button
+          width="240px"
+          onClick={() => {
+            isDetailModalOpen = true;
+            isDetailsModalOpen = false;
+          }}
+        >
+          <Plus fill={$themeStore.palette.text.contrast} />
+          <span style:margin-left="-6px">ADD DETAIL</span>
+        </Button>
         <Button
           variant="Text"
           width="140px"
@@ -299,6 +329,43 @@
         </Button>
       </div>
     </Modal>
+
+    <Modal bind:isOpen={isDetailModalOpen} width="400px">
+      <div class="center modal-blocks">
+        <p class="modal-header">Create Detail</p>
+        <ScrollbarContainer height="auto" maxHeight="500px">
+          <div style:line-height="1.38">
+            {#each details as detail}
+              <p>{detail.content}</p>
+            {/each}
+          </div>
+        </ScrollbarContainer>
+      </div>
+      <div class="flex center" style:width="100%" style:gap="7px">
+        <TextArea bind:value={detail.content} label="Detail" width="100%" />
+        <Button
+          width="100%"
+          onClick={() => {
+            isDetailModalOpen = false;
+            isDetailsModalOpen = true;
+            addDetail();
+          }}
+        >
+          <Save size="23px" fill={$themeStore.palette.text.contrast} />
+          <span style:margin-left="5px">SAVE DETAIL</span>
+        </Button>
+        <Button
+          variant="Text"
+          width="160px"
+          onClick={() => {
+            isDetailModalOpen = false;
+            isDetailsModalOpen = true;
+          }}
+        >
+          <span>Back to the Details</span>
+        </Button>
+      </div>
+    </Modal>
   </div>
 {/if}
 
@@ -307,6 +374,7 @@
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
   }
 
   .container {
