@@ -5,6 +5,7 @@
   import { Pen, Delete, Save } from "svelte-elegant/icons-elegant";
   let isEntryModalOpen = false;
   let isDeleteModalOpen = false;
+  let isDetailsModalOpen = false;
   let isInitialized = false;
   let entries = [];
   let boxSize = "220px";
@@ -185,6 +186,10 @@
             width="100px"
             height="25px"
             padding="0"
+            onClick={() => {
+              isEntryModalOpen = false;
+              isDetailsModalOpen = true;
+            }}
           >
             Check Details
           </Button>
@@ -218,30 +223,13 @@
     </Modal>
 
     <Modal bind:isOpen={isDeleteModalOpen} width="auto">
-      <div
-        style:width="100%"
-        style:display="flex"
-        style:flex-direction="column"
-        style:justify-content="center"
-        style:text-align="center"
-      >
-        <p
-          style:font-size="24px"
-          style:font-weight="600"
-          style:margin-bottom="5px"
-        >
-          Delete Entry
-        </p>
+      <div class="center modal-blocks">
+        <p class="modal-header">Delete Entry</p>
         <p style:margin-bottom="5px">
           Are you sure you want to delete this entry?
         </p>
       </div>
-      <div
-        style:width="100%"
-        style:display="flex"
-        style:justify-content="center"
-        style:gap="7px"
-      >
+      <div class="center" style:gap="7px">
         <Button
           variant="Text"
           borderColor="#f50d0d"
@@ -267,10 +255,37 @@
         </Button>
       </div>
     </Modal>
+
+    <Modal bind:isOpen={isDetailsModalOpen} width="auto">
+      <div class="center modal-blocks">
+        <p class="modal-header">Details Entry</p>
+        <p style:margin-bottom="5px">
+          Are you sure you want to delete this entry?
+        </p>
+      </div>
+      <div class="center" style:gap="7px">
+        <Button
+          variant="Text"
+          width="140px"
+          onClick={() => {
+            isEntryModalOpen = true;
+            isDetailsModalOpen = false;
+          }}
+        >
+          <span>Back to the Entry</span>
+        </Button>
+      </div>
+    </Modal>
   </div>
 {/if}
 
 <style>
+  .center {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
   .container {
     padding: 10px;
     display: flex;
@@ -300,9 +315,20 @@
     height: 100%;
   }
 
+  .modal-header {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
   .create-button {
     align-items: center;
     gap: 12px;
     padding: 15px;
+  }
+
+  .modal-blocks {
+    flex-direction: column;
+    text-align: center;
   }
 </style>
