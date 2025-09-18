@@ -21,7 +21,7 @@ export function GET({ url }) {
   if (!entry_id) {
     return new Response(JSON.stringify({ error: "entry_id required" }), { status: 400 });
   }
-  const rows = db.prepare("SELECT * FROM details WHERE entry_id = ? ORDER BY id DESC").all(entry_id);
+  const rows = db.prepare("SELECT * FROM details WHERE entry_id = ? ORDER BY id").all(entry_id);
   return new Response(JSON.stringify(rows), { headers: { "Content-Type": "application/json" } });
 }
 

@@ -6,6 +6,7 @@
     Button,
     Modal,
     ScrollbarContainer,
+    IconHover,
   } from "svelte-elegant";
   import { themeStore, themeMode } from "svelte-elegant/stores";
   import { Pen, Delete, Save, Plus } from "svelte-elegant/icons-elegant";
@@ -292,16 +293,33 @@
       </div>
     </Modal>
 
-    <Modal bind:isOpen={isDetailsModalOpen} width="auto">
+    <Modal bind:isOpen={isDetailsModalOpen} width="">
       <div class="center modal-blocks">
         <p class="modal-header">Details Entry</p>
-        <ScrollbarContainer height="auto" maxHeight="500px" width="500px">
+        <ScrollbarContainer height="auto" maxHeight="500px">
           <div
-            style:line-height="1.38"
-            style:margin-bottom={details.length ? "10px" : ""}
+            style:margin-bottom={details.length ? "4px" : ""}
+            style:font-size="16px"
+            class="center flex"
           >
-            {#each details as detail}
-              <p>{detail.content}</p>
+            {#each details as detail, i}
+              <div
+                style:display="flex"
+                style:justify-content="center"
+                style:align-items="center"
+                style:text-align="center"
+                style:margin-left="20px"
+              >
+                <p style:margin-right="5px" style:margin-top="-4px">
+                  {i + 1}. {detail.content}
+                </p>
+                <IconHover padding="5px" isPrimary>
+                  <Pen size="18px" />
+                </IconHover>
+                <IconHover padding="5px">
+                  <Delete size="19px" />
+                </IconHover>
+              </div>
             {/each}
           </div>
         </ScrollbarContainer>
@@ -333,13 +351,6 @@
     <Modal bind:isOpen={isDetailModalOpen} width="400px">
       <div class="center modal-blocks">
         <p class="modal-header">Create Detail</p>
-        <ScrollbarContainer height="auto" maxHeight="500px">
-          <div style:line-height="1.38">
-            {#each details as detail}
-              <p>{detail.content}</p>
-            {/each}
-          </div>
-        </ScrollbarContainer>
       </div>
       <div class="flex center" style:width="100%" style:gap="7px">
         <TextArea bind:value={detail.content} label="Detail" width="100%" />
