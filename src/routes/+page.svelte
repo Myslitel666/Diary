@@ -328,6 +328,7 @@
         <Button
           width="100%"
           maxWidth="340px"
+          height="40px"
           onClick={() => {
             isDetailModalOpen = true;
             isDetailsModalOpen = false;
@@ -338,7 +339,9 @@
         </Button>
         <Button
           variant="Text"
-          width="140px"
+          height="32px"
+          width="128px"
+          padding="0"
           onClick={() => {
             isEntryModalOpen = true;
             isDetailsModalOpen = false;
