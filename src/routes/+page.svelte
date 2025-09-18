@@ -1,6 +1,12 @@
 <script>
   import { onMount } from "svelte";
-  import { TextField, TextArea, Button, Modal } from "svelte-elegant";
+  import {
+    TextField,
+    TextArea,
+    Button,
+    Modal,
+    ScrollbarContainer,
+  } from "svelte-elegant";
   import { themeStore, themeMode } from "svelte-elegant/stores";
   import { Pen, Delete, Save } from "svelte-elegant/icons-elegant";
   let isEntryModalOpen = false;
@@ -9,6 +15,20 @@
   let isInitialized = false;
   let entries = [];
   let boxSize = "220px";
+
+  let details = [
+    {
+      id: 1,
+      entry_id: 1,
+      content: "Detail aaa",
+    },
+    {
+      id: 2,
+      entry_id: 1,
+      content: "Detail bbb",
+    },
+  ];
+
   let modal = {
     title: "",
     content: "",
@@ -255,13 +275,16 @@
         </Button>
       </div>
     </Modal>
-
     <Modal bind:isOpen={isDetailsModalOpen} width="auto">
       <div class="center modal-blocks">
         <p class="modal-header">Details Entry</p>
-        <p style:margin-bottom="5px">
-          Are you sure you want to delete this entry?
-        </p>
+        <ScrollbarContainer height="auto" maxHeight="500px" width="500px">
+          <div style:line-height="1.38">
+            {#each details as detail}
+              <p>{detail.content}</p>
+            {/each}
+          </div>
+        </ScrollbarContainer>
       </div>
       <div class="center" style:gap="7px">
         <Button
