@@ -59,7 +59,7 @@
 
   async function updateDetail() {
     await fetch("/api/details", {
-      method: "POST",
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         id: detail.id,
@@ -177,6 +177,7 @@
             date: e.date,
             isCreate: false,
           };
+          loadDetails();
         }}
       >
         <div
@@ -415,7 +416,8 @@
           onClick={() => {
             isDetailModalOpen = false;
             isDetailsModalOpen = true;
-            addDetail();
+            if (detail.id === 0) addDetail();
+            else updateDetail();
           }}
         >
           <Save size="23px" fill={$themeStore.palette.text.contrast} />
