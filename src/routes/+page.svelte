@@ -39,8 +39,8 @@
     entries = await res.json();
   }
 
-  async function loadDetails(entry_id) {
-    const res = await fetch(`/api/details?entry_id=${entry_id}`);
+  async function loadDetails() {
+    const res = await fetch(`/api/details?entry_id=${modal.id}`);
     details = await res.json();
   }
 
@@ -54,7 +54,20 @@
         content: detail.content,
       }),
     });
-    loadDetails(modal.id);
+    loadDetails();
+  }
+
+  async function updateDetail() {
+    await fetch("/api/details", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: detail.id,
+        entry_id: detail.entry_id,
+        content: detail.content,
+      }),
+    });
+    loadDetails();
   }
 
   async function deleteDetail() {
@@ -65,7 +78,7 @@
         id: detail.id,
       }),
     });
-    loadDetails(modal.id);
+    loadDetails();
   }
 
   async function addEntry() {
@@ -237,7 +250,7 @@
             onClick={() => {
               isEntryModalOpen = false;
               isDetailsModalOpen = true;
-              loadDetails(modal.id);
+              loadDetails();
             }}
           >
             Check Details
@@ -333,6 +346,8 @@
                         entry_id: det.entry_id,
                         content: det.content,
                       };
+                      isDetailModalOpen = true;
+                      isDetailsModalOpen = false;
                     }}
                   >
                     <Pen size="18px" />
@@ -366,6 +381,7 @@
           onClick={() => {
             isDetailModalOpen = true;
             isDetailsModalOpen = false;
+            detail = { id: 0, entry_id: modal.id, content: "" };
           }}
         >
           <Plus fill={$themeStore.palette.text.contrast} />
@@ -388,7 +404,9 @@
 
     <Modal bind:isOpen={isDetailModalOpen} width="400px">
       <div class="center modal-blocks">
-        <p class="modal-header">Create Detail</p>
+        <p class="modal-header">
+          {#if detail.id === 0}Create{:else}Moify{/if} Detail
+        </p>
       </div>
       <div class="flex center" style:width="100%" style:gap="7px">
         <TextArea bind:value={detail.content} label="Detail" width="100%" />
