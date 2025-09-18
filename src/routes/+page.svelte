@@ -334,12 +334,17 @@
                 style:display="flex"
                 style:margin-left="20px"
               >
-                <p style:margin-right="5px" style:margin-top="4px">
+                <p
+                  style:margin-right="5px"
+                  style:margin-top="4px"
+                  style:text-align="justify"
+                >
                   {i + 1}. {det.content}
                 </p>
                 <div style:margin-left="auto" style:display="flex">
                   <IconHover
-                    padding="5px"
+                    height="27px"
+                    width="27px"
                     isPrimary
                     onClick={() => {
                       detail = {
@@ -354,7 +359,8 @@
                     <Pen size="18px" />
                   </IconHover>
                   <IconHover
-                    padding="5px"
+                    height="27px"
+                    width="27px"
                     onClick={() => {
                       detail = {
                         id: det.id,
