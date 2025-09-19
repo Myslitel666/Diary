@@ -338,10 +338,15 @@
                   style:margin-right="5px"
                   style:margin-top="4px"
                   style:text-align="justify"
+                  style:line-height="1.5"
                 >
                   {i + 1}. {det.content}
                 </p>
-                <div style:margin-left="auto" style:display="flex">
+                <div
+                  style:margin-left="auto"
+                  style:display="flex"
+                  style:margin-top="5px"
+                >
                   <IconHover
                     height="27px"
                     width="27px"
