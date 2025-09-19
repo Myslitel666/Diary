@@ -1,5 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { entries, details } from "../stores/diaryStore";
+  import { SqLiteProvider } from "$lib/SQLiteProvider";
   import {
     TextField,
     TextArea,
@@ -17,14 +19,9 @@
   let isDeleteDetailOpen = false;
   let detail = { id: 0, entry_id: 0, content: "" };
   let isInitialized = false;
-  let entries = [];
   let boxSize = "220px";
 
-  let details: {
-    id: number;
-    entry_id: number;
-    content: string;
-  }[] = [];
+  let sqLiteProvider = new SqLiteProvider();
 
   let modal = {
     id: 0,
@@ -33,16 +30,6 @@
     date: "",
     isCreate: false,
   };
-
-  async function loadEntries() {
-    const res = await fetch("/api/entries");
-    entries = await res.json();
-  }
-
-  async function loadDetails() {
-    const res = await fetch(`/api/details?entry_id=${modal.id}`);
-    details = await res.json();
-  }
 
   async function addDetail() {
     console.log(detail.content);
@@ -54,10 +41,10 @@
         content: detail.content,
       }),
     });
-    loadDetails();
+    sqLiteProvider.details.loadDetails(modal.id);
   }
 
-  async function updateDetail() {
+  async function updateDetail(detail) {
     await fetch("/api/details", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -67,73 +54,75 @@
         content: detail.content,
       }),
     });
-    loadDetails();
+    sqLiteProvider.details.loadDetails(modal.id);
   }
 
-  async function deleteDetail() {
+  async function deleteDetail(id) {
     await fetch("/api/details", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        id: detail.id,
+        id: id,
       }),
     });
-    loadDetails();
+    sqLiteProvider.details.loadDetails(modal.id);
   }
 
-  async function addEntry() {
+  async function addEntry(entry) {
     await fetch("/api/entries", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        date: modal.date,
-        title: modal.title,
-        content: modal.content,
+        date: entry.date,
+        title: entry.title,
+        content: entry.content,
       }),
     });
-    loadEntries();
+    sqLiteProvider.entries.loadEntries();
     isEntryModalOpen = false;
   }
 
-  async function updateEntry() {
+  async function updateEntry(entry) {
     await fetch("/api/entries", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        date: modal.date,
-        title: modal.title,
-        content: modal.content,
-        id: modal.id,
+        date: entry.date,
+        title: entry.title,
+        content: entry.content,
+        id: entry.id,
       }),
     });
-    loadEntries();
+    sqLiteProvider.entries.loadEntries();
     isEntryModalOpen = false;
   }
 
-  async function deleteEntry() {
+  async function deleteEntry(id) {
     await fetch("/api/entries", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        id: modal.id,
+        id: id,
       }),
     });
-    loadEntries();
+    sqLiteProvider.entries.loadEntries();
     isEntryModalOpen = false;
   }
 
   function formatDate(dateString) {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("ru-RU", {
-      weekday: "short", // 'Fri' вместо 'Friday'
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }).format(date);
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat("ru-RU", {
+        weekday: "short", // 'Fri' вместо 'Friday'
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }).format(date);
+    } catch {}
   }
 
   onMount(() => {
-    loadEntries();
+    sqLiteProvider.entries.loadEntries();
     isInitialized = true;
   });
 </script>
@@ -161,7 +150,7 @@
         <p style:color={$themeStore.palette.primary}>Create New Diary Entry</p>
       </div>
     </Button>
-    {#each entries as e}
+    {#each $entries as e}
       <Button
         variant="Outlined"
         borderColor={$themeStore.border.elegant.color}
@@ -177,7 +166,7 @@
             date: e.date,
             isCreate: false,
           };
-          loadDetails();
+          sqLiteProvider.details.loadDetails(modal.id);
         }}
       >
         <div
@@ -232,7 +221,13 @@
         <TextArea bind:value={modal.content} width="100%" label="Content" />
       </div>
       {#if modal.isCreate}
-        <Button onClick={addEntry} marginTop="9px" width="100%">
+        <Button
+          onClick={() => {
+            addEntry(modal);
+          }}
+          marginTop="9px"
+          width="100%"
+        >
           <Save size="23px" fill={$themeStore.palette.text.contrast} />
           <span style:margin-left="8px">SAVE ENTRY</span>
         </Button>
@@ -251,7 +246,7 @@
             onClick={() => {
               isEntryModalOpen = false;
               isDetailsModalOpen = true;
-              loadDetails();
+              sqLiteProvider.details.loadDetails(modal.id);
             }}
           >
             Check Details
@@ -259,7 +254,7 @@
         </div>
         <Button
           onClick={() => {
-            updateEntry();
+            updateEntry(modal);
           }}
           marginTop="6px"
           width="100%"
@@ -300,7 +295,7 @@
           bgColorHover="rgba(255,0,0,0.12)"
           width="100px"
           onClick={() => {
-            deleteEntry();
+            deleteEntry(modal.id);
             isDeleteModalOpen = false;
           }}
         >
@@ -324,11 +319,11 @@
         <p class="modal-header">Details Entry</p>
         <ScrollbarContainer height="auto" maxHeight="500px">
           <div
-            style:margin-bottom={details.length ? "4px" : ""}
+            style:margin-bottom={$details.length ? "4px" : ""}
             style:font-size="16px"
             class="center flex"
           >
-            {#each details as det, i}
+            {#each $details as det, i}
               <div
                 style:width="100%"
                 style:display="flex"
@@ -428,7 +423,7 @@
             isDetailModalOpen = false;
             isDetailsModalOpen = true;
             if (detail.id === 0) addDetail();
-            else updateDetail();
+            else updateDetail(detail);
           }}
         >
           <Save size="23px" fill={$themeStore.palette.text.contrast} />
@@ -462,7 +457,7 @@
           bgColorHover="rgba(255,0,0,0.12)"
           width="100px"
           onClick={() => {
-            deleteDetail();
+            deleteDetail(detail.id);
             isDetailsModalOpen = true;
             isDeleteDetailOpen = false;
           }}
