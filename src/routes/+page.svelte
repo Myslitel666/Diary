@@ -31,14 +31,14 @@
     isCreate: false,
   };
 
-  async function addDetail() {
+  async function addDetail(entry_id, content) {
     console.log(detail.content);
     await fetch("/api/details", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        entry_id: modal.id,
-        content: detail.content,
+        entry_id: entry_id,
+        content: content,
       }),
     });
     sqLiteProvider.details.loadDetails(modal.id);
@@ -422,7 +422,7 @@
           onClick={() => {
             isDetailModalOpen = false;
             isDetailsModalOpen = true;
-            if (detail.id === 0) addDetail();
+            if (detail.id === 0) addDetail(modal.id, detail.content);
             else updateDetail(detail);
           }}
         >
